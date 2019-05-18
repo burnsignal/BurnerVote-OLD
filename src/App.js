@@ -226,10 +226,11 @@ class App extends Component {
 
     
     let contract = contractabi.at('0xa26575bab179486100e325fc32250cd20a78a28a');
-    var int = await contract.newVoteProposal('abc','hiodhcoishcosdichod',152,{from: '0xBE4dD6Bae372CBA479176297b67D0D42447aFAE6'},function (err, transaction) {
+    var int = await contract.newVoteProposal('abc','hiodhcoishcosdichod', Date.now() + 3600 * 1000 ,{from: '0x0acb691fF5530040C5cBf275623e7641058B5Ccb', gas:1000000},function (err, transaction) {
       if (err) {
         return alert(`Sorry you weren't able to contribute!`)
       }
+      console.log(transaction)
 
       alert('Thanks for your successful contribution!')
     })
