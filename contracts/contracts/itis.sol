@@ -1,5 +1,23 @@
 pragma solidity ^0.5.0;
 
+contract VoteOption {
+    VoteProposalPool creator;
+    address owner;
+    address voteOptionAddress;
+    uint deadline;
+    string name;
+    string option;
+    
+    constructor(uint _deadline, string memory _name, string memory _option) public {
+        owner = msg.sender;
+        creator = VoteProposalPool(msg.sender);
+        voteOptionAddress = address(this);
+        deadline = _deadline;
+        name = _name;
+        option = _option;
+    }
+}
+
 contract VoteProposalPool {
     
     struct VoteProposal {
@@ -11,8 +29,6 @@ contract VoteProposalPool {
     
     VoteProposal[] public proposals;
     
-    constructor() public {}
-    
     function newVoteProposal(
         string calldata _name,
         string calldata _data,
@@ -20,11 +36,13 @@ contract VoteProposalPool {
     )
         external
         validateDeadline(_deadline)
-        returns (uint)
+        returns (VoteOption newVoteOptionA, VoteOption newVoteOptionB, uint)
     {
         proposals.push(VoteProposal(msg.sender, _deadline, _name, _data));
-        emit newProposalIssued(proposals.length - 1, msg.sender, _deadline, _name, _data);
-        return (proposals.length - 1);
+        VoteOption yes = new VoteOption(_deadline, _name, "yes");
+        VoteOption no = new VoteOption(_deadline, _name, "no");
+        emit newProposalIssued(proposals.length - 1, msg.sender, _deadline, _name, _data, "yes", "no");
+        return (yes, no, proposals.length - 1);
     }
     
     /**
@@ -40,5 +58,5 @@ contract VoteProposalPool {
     /**
      * Events
      */
-     event newProposalIssued(uint proposalID, address issuer, uint deadline, string name, string data);
+     event newProposalIssued(uint proposalID, address issuer, uint deadline, string name, string data, string optionA, string optionB);
 }
