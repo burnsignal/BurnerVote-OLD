@@ -141,7 +141,7 @@ const client = new ApolloClient({
 //            <Query query={GET_EVENTS} >
 //            {({ loading, error, data }) => {
 //           if (loading) return "Loading...";
-//           if (error) return `Error! ${error.message}`;
+//           if (error) return Error! ${error.message};
 
 //           return (
 //             <div>
@@ -189,7 +189,9 @@ class App extends Component {
         const accounts = await window.ethereum.enable()
         console.log(accounts)
         providerone = window.ethereum
+
         web3 = new Web3(window.ethereum);
+
         // defaultAccount = web3.eth.accounts[0];
         // console.log(defaultAccount)
   
@@ -215,6 +217,7 @@ class App extends Component {
   
     let address = '0xa26575bab179486100e325fc32250cd20a78a28a'
    
+
     const myContract = new web3.eth.Contract(abi, address, {
       defaultAccount: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462', // default from address
       defaultGasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
@@ -246,20 +249,26 @@ class App extends Component {
   
   
     
+
     // var int = await contract.newVoteProposal('abc','hiodhcoishcosdichod',152,{from: '0xBE4dD6Bae372CBA479176297b67D0D42447aFAE6',gas: 1000000},async (error, txHash) => {
     //   if(!error)
     //   waitForTxToBeMined(txHash)
     //   else
     //   console.error
     // })
+
     //  var int = await contract.methods.newVoteProposal('abc','hiodhcoishcosdichod',Date.now() + 36000*10000).send({ from: '0xBE4dD6Bae372CBA479176297b67D0D42447aFAE6'}).then(receipt => { /** some action **/ });
+
+     var int = await contract.methods.newVoteProposal('abc','hiodhcoishcosdichod',Date.now() + 36000*10000).send({ from: ''}).then(receipt => { / some action / });
 
 
     // async function waitForTxToBeMined (txHash){
     //   let txReceipt;
      
       
+
         console.log(myContract.address);
+
     //   web3.eth.filter('latest', function (error, result) {
     //     if (!error) {
     //       try {
