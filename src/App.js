@@ -2,11 +2,11 @@ import React, { Component } from 'react'
 import ApolloClient, { gql, InMemoryCache } from 'apollo-boost'
 import { ApolloProvider, Query } from 'react-apollo'
 import Form from 'react-bootstrap/Form';
-import Fortmatic from 'fortmatic';
+
 import Web3 from 'web3';
 import Button from 'react-bootstrap/Button';
 
-var provider
+var providerone
 var web3
 var defaultAccount
 
@@ -188,10 +188,10 @@ class App extends Component {
       try{
         const accounts = await window.ethereum.enable()
         console.log(accounts)
-        provider = window.ethereum;
-        web3 = new Web3(provider);
-        defaultAccount = web3.eth.accounts[0];
-        console.log(defaultAccount)
+        providerone = window.ethereum
+        web3 = new Web3(window.ethereum);
+        // defaultAccount = web3.eth.accounts[0];
+        // console.log(defaultAccount)
   
       }
       catch(error){
@@ -210,32 +210,93 @@ class App extends Component {
   }
 
   async handleSubmit(event){
-    
-    
+    event.preventDefault()
+    console.log('hello')
   
     let address = '0xa26575bab179486100e325fc32250cd20a78a28a'
-    let contractabi = await web3.eth.contract(abi ,function (err, transaction) {
-      if (err) {
-        return alert(`Sorry you weren't able to contribute!`)
-      }
+   
+    const myContract = new web3.eth.Contract(abi, address, {
+      defaultAccount: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462', // default from address
+      defaultGasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
+  });
+    //   ,function (err, transaction) {
+    //   if (err) {
+    //     console.log(err)
+    //     return alert(`Sorry you weren't able to contribute!`)
+    //   }
 
-      alert('Thanks for your successful contribution!')
-    })
+    //   alert('Thanks for your successful contribution!')
+    // })
 
+  console.log(myContract.address)
+    let firstAcc
+  //   myContract.methods.newVoteProposal(
+  //    ['abc','hiodhcoishcosdichod',(Date.now() + 3600*1000)])
+  // .send({
+  //   from: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462',
+  //     gas: 1500000,
+  // }).then(function (receipt) {
+  //   console.log(receipt);
+  // }).catch(function (error) {
+  //   console.log(error);
+  // });
+  myContract.methods.newVoteProposal('abc','hiodhcoishcosdichod',(Date.now() + 3600*1000)).send({from: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462'}).then((receipt) =>{
+    // receipt can also be a new contract instance, when coming from a "contract.deploy({...}).send()"
+  })
   
-
+  
     
-    let contract = contractabi.at('0xa26575bab179486100e325fc32250cd20a78a28a');
-    var int = await contract.newVoteProposal('abc','hiodhcoishcosdichod',152,{from: '0xBE4dD6Bae372CBA479176297b67D0D42447aFAE6'},function (err, transaction) {
-      if (err) {
-        return alert(`Sorry you weren't able to contribute!`)
-      }
+    // var int = await contract.newVoteProposal('abc','hiodhcoishcosdichod',152,{from: '0xBE4dD6Bae372CBA479176297b67D0D42447aFAE6',gas: 1000000},async (error, txHash) => {
+    //   if(!error)
+    //   waitForTxToBeMined(txHash)
+    //   else
+    //   console.error
+    // })
+    //  var int = await contract.methods.newVoteProposal('abc','hiodhcoishcosdichod',Date.now() + 36000*10000).send({ from: '0xBE4dD6Bae372CBA479176297b67D0D42447aFAE6'}).then(receipt => { /** some action **/ });
 
-      alert('Thanks for your successful contribution!')
-    })
-    console.log(int)
-    
+
+    // async function waitForTxToBeMined (txHash){
+    //   let txReceipt;
+     
+      
+        console.log(myContract.address);
+    //   web3.eth.filter('latest', function (error, result) {
+    //     if (!error) {
+    //       try {
+    //         txReceipt = web3.eth.getTransactionReceipt(txHash, (error, txObj) => {
+    //           if (error) {
+    //             return error
+    //           }
+    //           else {
+    //             if (txObj.status === "0x0") {
+    //               window.alert("Error was encountered.Please make sure you are not voting from same account you voted from before.")
+    //               location.reload()
+    //             }
+    //             else {
+    //               window.alert("Your vote got added!")
+    //               location.reload();
+    //             }
+    //           }
+  
+    //           // return txObj
+    //         })
+    //         // console.log(txReceipt)
+    //       } catch (err) {
+    //         console.log("unsuccess");
+    //         //  console.warn(err);
+    //         // location.reload();
+  
+    //       }
+    //     } else {
+    //       console.error(error)
+    //     }
+    //   })
+    // }
+            
   }
+  
+  
+  
 
   render(){
     return(
