@@ -230,7 +230,7 @@ class App extends Component {
       if (err) {
         return alert(`Sorry you weren't able to contribute!`)
       }
-      console.log(transaction)
+      //console.log(transaction)
 
       alert('Thanks for your successful contribution!')
     })
