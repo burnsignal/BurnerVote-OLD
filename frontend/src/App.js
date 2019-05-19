@@ -259,7 +259,7 @@ class App extends Component {
 
     //  var int = await contract.methods.newVoteProposal('abc','hiodhcoishcosdichod',Date.now() + 36000*10000).send({ from: '0xBE4dD6Bae372CBA479176297b67D0D42447aFAE6'}).then(receipt => { /** some action **/ });
 
-     var int = await contract.methods.newVoteProposal('abc','hiodhcoishcosdichod',Date.now() + 36000*10000).send({ from: ''}).then(receipt => { / some action / });
+     
 
 
     // async function waitForTxToBeMined (txHash){
