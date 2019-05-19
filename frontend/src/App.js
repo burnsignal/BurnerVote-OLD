@@ -5,6 +5,8 @@ import Form from 'react-bootstrap/Form';
 
 import Web3 from 'web3';
 import Button from 'react-bootstrap/Button';
+const Box = require('3box')
+
 
 var providerone
 var web3
@@ -179,6 +181,12 @@ class App extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+    async threebox (){
+      const profile = await Box.getProfile('0x12345abcde')
+      console.log(profile)
+    }
+
+    
  async componentDidMount(){
     if(typeof window.ethereum === 'undefined'){
       console.log("wrong")
@@ -259,7 +267,7 @@ class App extends Component {
 
     //  var int = await contract.methods.newVoteProposal('abc','hiodhcoishcosdichod',Date.now() + 36000*10000).send({ from: '0xBE4dD6Bae372CBA479176297b67D0D42447aFAE6'}).then(receipt => { /** some action **/ });
 
-     var int = await contract.methods.newVoteProposal('abc','hiodhcoishcosdichod',Date.now() + 36000*10000).send({ from: ''}).then(receipt => { / some action / });
+     
 
 
     // async function waitForTxToBeMined (txHash){
