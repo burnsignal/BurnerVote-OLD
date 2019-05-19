@@ -7,8 +7,12 @@ import {SolarPanel} from './Components/SolarPanel.js';
 import Form from 'react-bootstrap/Form';
 import Web3 from 'web3';
 import Button from 'react-bootstrap/Button';
+<<<<<<< HEAD
 import {  Row, Col } from "react-bootstrap";
 import PieChart from 'react-minimal-pie-chart';
+=======
+import { AbstractMethodFactory } from 'web3-core-method';
+>>>>>>> cec0ab6673131699c9041b709b6f366e01ac56d3
 
 var k 
 var a
@@ -157,7 +161,11 @@ var abi = [
    "type": "function"
   }
  ]
+<<<<<<< HEAD
 
+=======
+// Implement Quadratic voting in frontend
+>>>>>>> cec0ab6673131699c9041b709b6f366e01ac56d3
  let maths_factor = (Vote, choice) => {
   let m1 = 1
   let m2 = 0
@@ -178,6 +186,7 @@ var abi = [
 }
 
 
+<<<<<<< HEAD
 // let calcQuadraticVote = (moneymap) => {
 //   for (var i = 0, keys = Object.keys(moneymap), ii = keys.length; i < ii; i++) {
 //     let Contribution = moneymap[keys[i]]
@@ -185,6 +194,15 @@ var abi = [
 //     //console.log('key : ' + keys[i] + ' val : ' + moneymap[keys[i]]);
 //   }
 // }  
+=======
+let calcQuadraticVote = (moneymap) => {
+  for (var i = 0, keys = Object.keys(moneymap), ii = keys.length; i < ii; i++) {
+    let Contribution = moneymap[keys[i]]
+    let CalcVote = maths_factor(Contribution)
+    //console.log('key : ' + keys[i] + ' val : ' + moneymap[keys[i]]);
+  }
+}  
+>>>>>>> cec0ab6673131699c9041b709b6f366e01ac56d3
 // import Formatic from 'formatic';
 
 class App extends Component {
@@ -270,8 +288,12 @@ class App extends Component {
      
     var keys = Object.values(result)
     var keysmap = Object.values(Object.values(keys[0]))[0][0]   
+<<<<<<< HEAD
     console.log(keysmap)
     moneymap.set(keysmap.Contrivalue,keysmap.SenderAddr) //hash map woud take care of uniqueness 
+=======
+    moneymap.set(keysmap.SenderAddr,keysmap.Contrivalue) //hash map woud take care of uniqueness 
+>>>>>>> cec0ab6673131699c9041b709b6f366e01ac56d3
 
     proposalissued = Object.values(Object.values(keys[0]))[1][0] 
     dataextra = proposalissued.data
@@ -293,7 +315,7 @@ class App extends Component {
      
 
     const myContractone = new web3.eth.Contract(abione, ' 0x876120Bbe3B53E69EA55B18Db0F1dFB2cBeB7693', {  
-      defaultAccount: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462', // default from address
+      defaultAccount: '0x434f5800a864F6A8a03286c028AC60C3228dB54a', // default from address
       defaultGasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
   });
 
@@ -351,7 +373,7 @@ class App extends Component {
    
 
     const myContract = new web3.eth.Contract(abi, address, {
-      defaultAccount: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462', // default from address
+      defaultAccount: '0x434f5800a864F6A8a03286c028AC60C3228dB54a', // default from address
       defaultGasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
   });
 
@@ -367,10 +389,16 @@ class App extends Component {
   
   console.log(this.state.value)
   
+<<<<<<< HEAD
  var n = this.state.name
  var v = this.state.value
   k = Date.now() + 3600*1000
   myContract.methods.newVoteProposal(n,v,(k)).send({from: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462'}).then((receipt) =>{
+=======
+  
+ 
+  myContract.methods.newVoteProposal('abc','hiodhcoishcosdichod',(Date.now() + 3600*1000)).send({from: 'Ee761EdA7A139F3fC5b8cAA138CB76aA4620x6Cdf5'}).then((receipt) =>{
+>>>>>>> cec0ab6673131699c9041b709b6f366e01ac56d3
     // receipt can also be a new contract instance, when coming from a "contract.deploy({...}).send()"
     window.alert("Thanks for your submission")
   })
@@ -387,7 +415,7 @@ class App extends Component {
     event.preventDefault()
     var k = this.state.a
     web3.eth.sendTransaction({
-      from: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462',
+      from: '0x434f5800a864F6A8a03286c028AC60C3228dB54a',
       to: opA,
       value: k
   })
@@ -402,7 +430,7 @@ class App extends Component {
     event.preventDefault()
     var j = this.state.b
     web3.eth.sendTransaction({
-      from: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462',
+      from: '0x434f5800a864F6A8a03286c028AC60C3228dB54a',
       to: opB,
       value: j
   })
