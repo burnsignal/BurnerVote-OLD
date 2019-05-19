@@ -1,5 +1,10 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: 'Proxima Nova', sans-serif;
+  min-width: 360px;
+  background: radial-gradient(ellipse at center, #1C2837 0%, #050608 100%);
+  /* background-attachment:fixed; */
+  /* overflow: hidden; */
+  overflow-x: hidden;
 }

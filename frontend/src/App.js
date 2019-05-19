@@ -1,9 +1,19 @@
-import React, { Component } from 'react'
-
+import React, { Component } from 'react';
+import { StyleSheet, css } from 'aphrodite';
+import { NavBar } from './Components/NavBar.js';
+import { Fragment } from 'react'
+import {StarField} from './Components/SolarSystem/StarField.js';
+import {SolarPanel} from './Components/SolarPanel.js';
 import Form from 'react-bootstrap/Form';
 import Web3 from 'web3';
 import Button from 'react-bootstrap/Button';
+import {  Row, Col } from "react-bootstrap";
+import PieChart from 'react-minimal-pie-chart';
 
+var k 
+var a
+var red 
+var blue
 var name
 var opA
 var opB 
@@ -147,6 +157,34 @@ var abi = [
    "type": "function"
   }
  ]
+
+ let maths_factor = (Vote, choice) => {
+  let m1 = 1
+  let m2 = 0
+  let count = 0
+  while(m2 < Vote){
+    m2 += m1*m1
+    m1++
+    count++
+  }
+  if(choice == "yes"){
+    let YesVotes = count
+    return YesVotes
+  }
+  else{
+    let NoVotes = count
+    return NoVotes
+  }
+}
+
+
+// let calcQuadraticVote = (moneymap) => {
+//   for (var i = 0, keys = Object.keys(moneymap), ii = keys.length; i < ii; i++) {
+//     let Contribution = moneymap[keys[i]]
+//     let CalcVote = maths_factor(Contribution,Choice)
+//     //console.log('key : ' + keys[i] + ' val : ' + moneymap[keys[i]]);
+//   }
+// }  
 // import Formatic from 'formatic';
 
 class App extends Component {
@@ -155,7 +193,11 @@ class App extends Component {
     this.state = {value: '',
        data: '',
        address: [],
-       money: []
+       money: [],
+       submit : false,
+       name : '',
+       a: 0,
+       b: 0
 }
 
     this.handleChange = this.handleChange.bind(this);
@@ -165,6 +207,7 @@ class App extends Component {
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleSubmitA = this.handleSubmitA.bind(this)
     this.handleSubmitB = this.handleSubmitB.bind(this)
+    
   }
 
 
@@ -227,13 +270,16 @@ class App extends Component {
      
     var keys = Object.values(result)
     var keysmap = Object.values(Object.values(keys[0]))[0][0]   
+    console.log(keysmap)
     moneymap.set(keysmap.Contrivalue,keysmap.SenderAddr) //hash map woud take care of uniqueness 
 
     proposalissued = Object.values(Object.values(keys[0]))[1][0] 
+    dataextra = proposalissued.data
     deadline = proposalissued.deadline;
     name = keysmap.PropName;
     opA = proposalissued.optionAaddr
    opB = proposalissued.optionBaddr
+   console.log(Object.values(Object.values(keys[0])) )
     console.log(deadline)
     console.log(name)
     console.log(opA)
@@ -263,7 +309,41 @@ class App extends Component {
     })
   }
 
+  handleChangeone(event){
+    event.preventDefault()
+    this.setState({
+      name : event.target.value
+    })
+  }
+
+  handleChangetwo(event){
+    event.preventDefault()
+    console.log("hey" + event.target.value)
+    this.setState({
+      b : event.target.value*1000000000000000000
+    })
+  }
+
+  handleChangethree(event){
+    event.preventDefault()
+    console.log("heyasnka" + event.target.value)
+    this.setState({
+      a : event.target.value*1000000000000000000
+    })
+
+  }
+  // async threebox(){
+  //   const box = await Box.openBox('0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462', window.ethereum)
+  //   box.onSyncDone(() =>{
+  //     console.log('hello')
+  //   })
+
+
+  // }
   async handleSubmit(event){
+    this.setState({
+      submit : true
+    })
     event.preventDefault()
     console.log('hello')
   
@@ -285,11 +365,17 @@ class App extends Component {
   
   
   
+  console.log(this.state.value)
   
-  
- 
-  myContract.methods.newVoteProposal('abc','hiodhcoishcosdichod',(Date.now() + 3600*1000)).send({from: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462'}).then((receipt) =>{
+ var n = this.state.name
+ var v = this.state.value
+  k = Date.now() + 3600*1000
+  myContract.methods.newVoteProposal(n,v,(k)).send({from: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462'}).then((receipt) =>{
     // receipt can also be a new contract instance, when coming from a "contract.deploy({...}).send()"
+    window.alert("Thanks for your submission")
+  })
+  .catch((error) =>{
+    window.alert(error)
   })
         console.log(myContract.address);
 
@@ -299,10 +385,11 @@ class App extends Component {
 
   async handleSubmitA(event){
     event.preventDefault()
+    var k = this.state.a
     web3.eth.sendTransaction({
       from: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462',
       to: opA,
-      value: '1'
+      value: k
   })
   .then(function(receipt){
      console.log("success")
@@ -311,18 +398,19 @@ class App extends Component {
   }
 
   async handleSubmitB(event){
-    for (var i = 0, keys = Object.keys(moneymap), ii = keys.length; i < ii; i++) {
-      console.log('key : ' + keys[i] + ' val : ' + moneymap[keys[i]]);
-    }
+    
     event.preventDefault()
+    var j = this.state.b
     web3.eth.sendTransaction({
       from: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462',
       to: opB,
-      value: '1'
+      value: j
   })
   .then(function(receipt){
    
   });
+  
+
 
   }
   
@@ -330,40 +418,127 @@ class App extends Component {
   
 
   render(){
+    if(this.state.submit){
+      console.log(dataextra)
+       a = dataextra
+      //  setTimeout(() =>{
+      //  window.alert('Expired')
+      //  },30000)
+
+    }
     return(
+      <div className={css(styles.wrapper)}>
       <div>
-      <Form>
-      <Form.Group controlId="formProposal">
-        <Form.Label>Enter Proposal</Form.Label>
+        <Row>
+            <Col xs={6} md={6}>
+            <Form>
+            <Form.Label style={{fontSize: '20px' ,color:'#ffffff'}}> It Expires on : May 20, 2019 Time</Form.Label>
+          
+            <br />
+            <Form.Label style={{fontSize: '20px' ,color:'#ffffff'}} >Proposal is : {this.state.value}</Form.Label>
+            </Form>
+            
+              <StarField noOfStars='140' />
        
-        <Form.Control as="textarea" rows="3" onChange= {(e) =>{this.handleChange(e)}}/>
-      </Form.Group>
+              <SolarPanel />
+            </Col>
+            <Col xs={6} md={4}  >
+            <Row>
+            <Form>
+            <Form.Label style={{fontSize: '50px' ,color:'#ffffff'}}>Enter the Proposal's Name</Form.Label>
+
+        <Form.Control type="text" onChange= {(e) =>{this.handleChangeone(e)}}/>
+        <Form.Label style={{fontSize: '50px' ,color:'#ffffff'}}>Enter Proposal</Form.Label>
+      
+        <Form.Control as="textarea" rows="3" cols = '6' onChange= {(e) =>{this.handleChange(e)}}/>
+  
+    
+          </Form>
+          <br />
+          <br />
+            </Row>
+            <Row>
+            <br />
+            <Button variant="primary" type="submit" onClick={(e) => this.handleSubmit(e)} >
+        Submit  </Button>
+    
+            </Row>
+            <br />
+            <br />
+            <Row>
+            <Col>
+              <Form>
+              <Form.Label style={{fontSize: '20px' ,color:'#ffffff'}}>Select the the outcome you prefer:</Form.Label>
+              </Form>
+            </Col>
+            <Col>
+            <Form>
+            <Form.Control type="number" placeholder='ETH' onChange= {(e) =>{this.handleChangethree(e)}}/>
+            <Button variant="primary" type="submit" onClick={(e) => this.handleSubmitA(e)} >
+            Yes
+               </Button>
+            </Form>
+          
+             
+              <br />
+            </Col>
+            <Col>
+            <Form>
+            <Form.Control type="number" placeholder='ETH' onChange= {(e) =>{this.handleChangetwo(e)}}/>
+            <Button variant="primary" type="submit" onClick={(e) => this.handleSubmitB(e)} >
+                No
+              </Button>
+           
+            </Form>
+         
+            </Col>
+            <Col>
+
+            <PieChart
+        data={[
+          { title: 'Yes', value: red, color: '#E38627' },
+          { title: 'No', value: blue, color: '#0000FF' },
+          
+        ]}
+      />;
+            </Col>
+           
+
+           
+            </Row>
+       
+          </Col>
+  
+          <Col>
+           
+         
+          </Col>
+        </Row>
+        <Row mr ={6}>
+          
+         
+      
+     
+    
+        </Row>
+      </div>
       
     
-    </Form>
-    <br />
-    <Button variant="primary" type="submit" onClick={(e) => this.handleSubmit(e)} >
-        Submit
-      </Button>
-      <br />
-      <div>
-        {this.state.data}
-      </div>
-      <br />
-     
-      <Button variant="primary" type="submit" onClick={(e) => this.handleSubmitA(e)} >
-        A
-      </Button>
-      <br />
-
-      <Button variant="primary" type="submit" onClick={(e) => this.handleSubmitB(e)} >
-        B
-      </Button>
       <br />
       
       </div>
     )
   }
 }
+
+const styles = StyleSheet.create({
+  wrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+    overflowY: 'visible',
+    overflowX: 'hidden',
+  },
+});
+
 export default App;
 
