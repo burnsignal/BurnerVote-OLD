@@ -1,15 +1,54 @@
 import React, { Component } from 'react'
-import ApolloClient, { gql, InMemoryCache } from 'apollo-boost'
-import { ApolloProvider, Query } from 'react-apollo'
-import Form from 'react-bootstrap/Form';
 
+import Form from 'react-bootstrap/Form';
 import Web3 from 'web3';
 import Button from 'react-bootstrap/Button';
 
+var name
+var opA
+var opB 
 var providerone
 var web3
 var defaultAccount
-
+var proposalissued
+var deadline
+var moneymap = new Map();
+var dataextra
+var abione = 
+[
+  {"constant":false,
+  "inputs":
+  [
+    {"name":"contextName","type":"bytes32"},
+    {"name":"nodeAddress","type":"address"}],
+    "name":"removeNodeFromContext","outputs":[],
+    "payable":false,"stateMutability":"nonpayable","type":"function"},
+    {"constant":true,"inputs":[{"name":"userAddress","type":"address"}],
+    "name":"isUser","outputs":[{"name":"ret","type":"bool"}],
+    "payable":false,"stateMutability":"view","type":"function"},
+    {"constant":false,"inputs":[{"name":"contextName","type":"bytes32"},
+    {"name":"nodeAddress","type":"address"}],
+    "name":"addNodeToContext","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},
+    {"constant":false,"inputs":[{"name":"contextName","type":"bytes32"}],
+    "name":"removeContext","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},
+    {"constant":true,"inputs":[{"name":"contextName","type":"bytes32"}],
+    "name":"isContext","outputs":[{"name":"ret","type":"bool"}],
+    "payable":false,"stateMutability":"view","type":"function"},
+    {"constant":true,"inputs":[{"name":"userAddress","type":"address"},
+    {"name":"contextName","type":"bytes32"}],"name":"getScore","outputs":[{"name":"","type":"uint32"},
+    {"name":"","type":"uint64"}],"payable":false,"stateMutability":"view","type":"function"},
+    {"constant":false,"inputs":[{"name":"userAddress","type":"address"},{"name":"contextName","type":"bytes32"},
+    {"name":"score","type":"uint32"},{"name":"timestamp","type":"uint64"},
+    {"name":"r","type":"bytes32"},{"name":"s","type":"bytes32"},{"name":"v","type":"uint8"}],
+    "name":"setScore","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},
+    {"constant":true,"inputs":[{"name":"contextName","type":"bytes32"},{"name":"nodeAddress","type":"address"}],
+    "name":"isNodeInContext","outputs":[{"name":"ret","type":"bool"}],
+    "payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"contextName","type":"bytes32"}],
+    "name":"addContext","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{
+      "anonymous":false,"inputs":[{"indexed":false,"name":"userAddress","type":"address"},
+      {"indexed":false,"name":"contextName","type":"bytes32"},
+      {"indexed":false,"name":"score","type":"uint32"},{
+        "indexed":false,"name":"timestamp","type":"uint64"}],"name":"LogSetScore","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"contextName","type":"bytes32"},{"indexed":true,"name":"owner","type":"address"}],"name":"LogAddContext","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"contextName","type":"bytes32"},{"indexed":true,"name":"owner","type":"address"}],"name":"LogRemoveContext","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"contextName","type":"bytes32"},{"indexed":false,"name":"nodeAddress","type":"address"}],"name":"LogAddNodeToContext","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"contextName","type":"bytes32"},{"indexed":false,"name":"nodeAddress","type":"address"}],"name":"LogRemoveNodeFromContext","type":"event"}]
 var abi = [
   {
    "constant": false,
@@ -110,77 +149,28 @@ var abi = [
  ]
 // import Formatic from 'formatic';
 
-const client = new ApolloClient({
-  uri: 'https://api.thegraph.com/subgraphs/name/sneh1999/snehsubgraph',
-  cache: new InMemoryCache(),
-})
-
-
-// const GET_EVENTS = gql`
-//   query contractCreateds() {
-//     contractCreateds {
-//       id
-//       sender
-//       amount
-//     }
-//   }
-// `
-
-// class App extends Component {
-//   constructor() {
-//     super()
-   
-//   }
-
- 
-
-//   render() {
-//          return (
-//            <ApolloProvider client={client}>
-//            <div>
-//            <Query query={GET_EVENTS} >
-//            {({ loading, error, data }) => {
-//           if (loading) return "Loading...";
-//           if (error) return Error! ${error.message};
-
-//           return (
-//             <div>
-//               hello
-//             </div>
-//       );
-//     }}
-//   </Query>
-//       )
-    
-//         hello
-//       </div>
-
-//            </ApolloProvider>
-        
-//     )
-//   }
-// }
-// export default App
-
-
-
-
-
-
-
-
-
 class App extends Component {
   constructor(props){
     super(props)
-    this.state = {value: ''}
+    this.state = {value: '',
+       data: '',
+       address: [],
+       money: []
+}
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.graph = this.graph.bind(this);
+    this.checkscore = this.checkscore.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleSubmitA = this.handleSubmitA.bind(this)
+    this.handleSubmitB = this.handleSubmitB.bind(this)
   }
+
 
  async componentDidMount(){
     if(typeof window.ethereum === 'undefined'){
+      this.graph()
       console.log("wrong")
       return;
     }
@@ -189,9 +179,9 @@ class App extends Component {
         const accounts = await window.ethereum.enable()
         console.log(accounts)
         providerone = window.ethereum
-        web3 = new Web3(Web3.currentProvider);
-        // defaultAccount = web3.eth.accounts[0];
-        // console.log(defaultAccount)
+
+        web3 = new Web3(window.ethereum);
+        this.graph()
   
       }
       catch(error){
@@ -200,6 +190,70 @@ class App extends Component {
     }
    
   }
+   async graph(){
+
+      const query = `{
+        anonymousDeposits(first: 5) {
+          id
+          SenderAddr
+          ContriValue
+          PropName
+        }
+        newProposalIssueds(first: 5) {
+          id
+          issuer
+          deadline
+          name
+          data
+          optionBaddr
+          optionAaddr
+        }
+      }`;
+      const results = {}
+      
+   const result = 
+   await fetch('https://api.thegraph.com/subgraphs/name/madhur4444/imgovdynamic', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        query
+      })
+    }).then(r => r.json())
+      .then(data => data)
+      .catch(error => console.log(error))
+     
+    var keys = Object.values(result)
+    var keysmap = Object.values(Object.values(keys[0]))[0][0]   
+    moneymap.set(keysmap.Contrivalue,keysmap.SenderAddr) //hash map woud take care of uniqueness 
+
+    proposalissued = Object.values(Object.values(keys[0]))[1][0] 
+    deadline = proposalissued.deadline;
+    name = keysmap.PropName;
+    opA = proposalissued.optionAaddr
+   opB = proposalissued.optionBaddr
+    console.log(deadline)
+    console.log(name)
+    console.log(opA)
+    console.log(opB)
+
+    console.log(deadline)
+
+    }
+
+    checkscore (){
+     
+
+    const myContractone = new web3.eth.Contract(abione, ' 0x876120Bbe3B53E69EA55B18Db0F1dFB2cBeB7693', {  
+      defaultAccount: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462', // default from address
+      defaultGasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
+  });
+
+  console.log(myContractone.address)
+    }
+
 
   handleChange(event) {
     
@@ -215,66 +269,61 @@ class App extends Component {
   
     let address = '0xa26575bab179486100e325fc32250cd20a78a28a'
    
-    let contract= new web3.eth.Contract(abi,address)
-    //   ,function (err, transaction) {
-    //   if (err) {
-    //     console.log(err)
-    //     return alert(Sorry you weren't able to contribute!)
-    //   }
 
-    //   alert('Thanks for your successful contribution!')
-    // })
-
-let firstAcc
-    
-    
-    // var int = await contract.newVoteProposal('abc','hiodhcoishcosdichod',152,{from: '0xBE4dD6Bae372CBA479176297b67D0D42447aFAE6',gas: 1000000},async (error, txHash) => {
-    //   if(!error)
-    //   waitForTxToBeMined(txHash)
-    //   else
-    //   console.error
-    // })
-     var int = await contract.methods.newVoteProposal('abc','hiodhcoishcosdichod',Date.now() + 36000*10000).send({ from: ''}).then(receipt => { / some action / });
+    const myContract = new web3.eth.Contract(abi, address, {
+      defaultAccount: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462', // default from address
+      defaultGasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
+  });
 
 
-    // async function waitForTxToBeMined (txHash){
-    //   let txReceipt;
-     
-      
-        
-    //   web3.eth.filter('latest', function (error, result) {
-    //     if (!error) {
-    //       try {
-    //         txReceipt = web3.eth.getTransactionReceipt(txHash, (error, txObj) => {
-    //           if (error) {
-    //             return error
-    //           }
-    //           else {
-    //             if (txObj.status === "0x0") {
-    //               window.alert("Error was encountered.Please make sure you are not voting from same account you voted from before.")
-    //               location.reload()
-    //             }
-    //             else {
-    //               window.alert("Your vote got added!")
-    //               location.reload();
-    //             }
-    //           }
+
   
-    //           // return txObj
-    //         })
-    //         // console.log(txReceipt)
-    //       } catch (err) {
-    //         console.log("unsuccess");
-    //         //  console.warn(err);
-    //         // location.reload();
+
+  console.log(myContract.address)
+    let firstAcc
   
-    //       }
-    //     } else {
-    //       console.error(error)
-    //     }
-    //   })
-    // }
+  
+  
+  
+  
+  
+ 
+  myContract.methods.newVoteProposal('abc','hiodhcoishcosdichod',(Date.now() + 3600*1000)).send({from: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462'}).then((receipt) =>{
+    // receipt can also be a new contract instance, when coming from a "contract.deploy({...}).send()"
+  })
+        console.log(myContract.address);
+
+   
             
+  }
+
+  async handleSubmitA(event){
+    event.preventDefault()
+    web3.eth.sendTransaction({
+      from: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462',
+      to: opA,
+      value: '1'
+  })
+  .then(function(receipt){
+     console.log("success")
+  });
+
+  }
+
+  async handleSubmitB(event){
+    for (var i = 0, keys = Object.keys(moneymap), ii = keys.length; i < ii; i++) {
+      console.log('key : ' + keys[i] + ' val : ' + moneymap[keys[i]]);
+    }
+    event.preventDefault()
+    web3.eth.sendTransaction({
+      from: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462',
+      to: opB,
+      value: '1'
+  })
+  .then(function(receipt){
+   
+  });
+
   }
   
   
@@ -292,11 +341,29 @@ let firstAcc
       
     
     </Form>
+    <br />
     <Button variant="primary" type="submit" onClick={(e) => this.handleSubmit(e)} >
         Submit
       </Button>
+      <br />
+      <div>
+        {this.state.data}
+      </div>
+      <br />
+     
+      <Button variant="primary" type="submit" onClick={(e) => this.handleSubmitA(e)} >
+        A
+      </Button>
+      <br />
+
+      <Button variant="primary" type="submit" onClick={(e) => this.handleSubmitB(e)} >
+        B
+      </Button>
+      <br />
+      
       </div>
     )
   }
 }
-export default App
+export default App;
+
