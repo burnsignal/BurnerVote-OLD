@@ -27,7 +27,7 @@ contract VoteProposal {
      * Storage
      */
     
-    mapping(string => address) options;
+    mapping(uint => address) public options;
     
     constructor(uint _deadline, string memory _name, string memory _data) public {
         owner = msg.sender;
@@ -43,8 +43,8 @@ contract VoteProposal {
     {
         VoteOption yes = new VoteOption(_deadline, "yes");
         VoteOption no = new VoteOption(_deadline, "no"); 
-        options["yes"] = address(yes);
-        options["no"] = address(no);
+        options[0] = address(yes);
+        options[1] = address(no);
         return (yes, no);
     }
 }
@@ -65,7 +65,8 @@ contract VoteProposalPool {
         returns (VoteProposal newProposal)
     {
         VoteProposal proposal = new VoteProposal(_deadline, _name, _data);
-        emit newProposalIssued(msg.sender, _deadline, _name, _data, "yes", "no");
+        proposal.createOptions(_deadline);
+        emit newProposalIssued(msg.sender, _deadline, _name, _data, "yes", proposal.options(0), "no", proposal.options(1));
         return (proposal);
     }
     
@@ -82,5 +83,5 @@ contract VoteProposalPool {
     /**
      * Events
      */
-     event newProposalIssued(address issuer, uint deadline, string name, string data, string optionA, string optionB);
+     event newProposalIssued(address issuer, uint deadline, string name, string data, string optionA, address optionAaddr, string optionB, address optionBaddr);
 }
