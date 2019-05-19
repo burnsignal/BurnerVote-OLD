@@ -1,16 +1,15 @@
 import React, { Component } from 'react'
 
 import Form from 'react-bootstrap/Form';
-import { request } from "graphql-request";
 import Web3 from 'web3';
 import Button from 'react-bootstrap/Button';
-// const Box = require('3box')
-// const Box = require('3box')
+
 
 
 var providerone
 var web3
 var defaultAccount
+
 
 var abi = [
   {
