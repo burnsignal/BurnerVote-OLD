@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import ApolloClient, { gql, InMemoryCache } from 'apollo-boost'
-import { ApolloProvider, Query } from 'react-apollo'
-import Form from 'react-bootstrap/Form';
 
+import Form from 'react-bootstrap/Form';
+import { request } from "graphql-request";
 import Web3 from 'web3';
 import Button from 'react-bootstrap/Button';
-const Box = require('3box')
+// const Box = require('3box')
+// const Box = require('3box')
 
 
 var providerone
@@ -112,64 +112,34 @@ var abi = [
  ]
 // import Formatic from 'formatic';
 
-const client = new ApolloClient({
-  uri: 'https://api.thegraph.com/subgraphs/name/sneh1999/snehsubgraph',
-  cache: new InMemoryCache(),
-})
 
 
-// const GET_EVENTS = gql`
-//   query contractCreateds() {
-//     contractCreateds {
-//       id
-//       sender
-//       amount
-//     }
-//   }
-// `
-
-// class App extends Component {
-//   constructor() {
-//     super()
-   
-//   }
-
- 
-
-//   render() {
-//          return (
-//            <ApolloProvider client={client}>
-//            <div>
-//            <Query query={GET_EVENTS} >
-//            {({ loading, error, data }) => {
-//           if (loading) return "Loading...";
-//           if (error) return Error! ${error.message};
-
-//           return (
-//             <div>
-//               hello
-//             </div>
-//       );
-//     }}
-//   </Query>
-//       )
-    
-//         hello
-//       </div>
-
-//            </ApolloProvider>
-        
-//     )
-//   }
-// }
-// export default App
+const query = `{
+  newProposalIssueds(first: 5) {
+    id
+    issuer
+    deadline
+    name
+    data
+    optionA
+    optionAaddr
+    optionB
+    optionBaddr
+  }
+}`;
 
 
-
-
-
-
-
+fetch('https://api.thegraph.com/subgraphs/name/madhur4444/imgovdn', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
+  body: JSON.stringify({
+    query
+  })
+}).then(r => r.json())
+  .then(data => console.log('data returned:', data));
 
 
 class App extends Component {
@@ -181,12 +151,7 @@ class App extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-    async threebox (){
-      const profile = await Box.getProfile('0x12345abcde')
-      console.log(profile)
-    }
 
-    
  async componentDidMount(){
     if(typeof window.ethereum === 'undefined'){
       console.log("wrong")
@@ -243,7 +208,13 @@ class App extends Component {
     let firstAcc
   //   myContract.methods.newVoteProposal(
   //    ['abc','hiodhcoishcosdichod',(Date.now() + 3600*1000)])
-  // .send({
+  // .se
+  
+  
+  
+  
+  
+  
   //   from: '0x6Cdf5Ee761EdA7A139F3fC5b8cAA138CB76aA462',
   //     gas: 1500000,
   // }).then(function (receipt) {
