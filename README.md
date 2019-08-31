@@ -4,7 +4,7 @@
 
 Anyone can create an issue on which anyone can signal their preference for or against by sending any amount of ETH to the corresponding Ethereum address.
 
-Signals are interpreted client-side
+Signals are interpreted client-side.
 
 Initially, our frontend will interpret the signals quadratically, using BrightID as a proof of uniqueness. But we hope to build out a variety of different methods for analyzing signals.
 
