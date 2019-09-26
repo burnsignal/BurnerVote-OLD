@@ -1,5 +1,5 @@
 # Burner Vote
-## Got an opnion? Burn some ETH to prove it.
+## Got an opinion? Burn some ETH to prove it.
 ### A general purpose signaling mechanism built on Ethereum.
 
 Anyone can create an issue on which anyone can signal their preference for or against by sending any amount of ETH to the corresponding Ethereum address.
